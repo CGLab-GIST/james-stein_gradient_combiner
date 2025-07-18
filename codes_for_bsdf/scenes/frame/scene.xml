@@ -1,0 +1,222 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="1000"/>
+	<default name="resx" value="1024"/>
+	<default name="resy" value="1024"/>
+	<default name="max_depth" value="13"/>
+	<default name="integrator" value="path"/>
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="$integrator">
+		<integer name="max_depth" value="$max_depth"/>
+	</integrator>
+	<sensor type="perspective">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="33.398491"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="100.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="-178.99307120075636"/>
+			<rotate y="1" angle="2.707255187448097"/>
+			<rotate z="1" angle="-178.59843653089138"/>
+			<translate value="-4.014010 1.329957 -2.273430"/>
+		</transform>
+		<sampler type="independent">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+			<rfilter type="box"/>
+		</film>
+	</sensor>
+
+<!-- Materials -->
+<bsdf type="conductor" id="gold">
+    <string name="material" value="Au"/>
+</bsdf>
+
+<bsdf type="conductor" id="copper">
+    <string name="material" value="Cu"/>
+</bsdf>
+<bsdf type="roughdielectric" id ="cups">
+    <string name="distribution" value="beckmann"/>
+    <float name="alpha" value="0.9"/>
+    <rgb name="specular_reflectance" value="0.4 0.4 0.1"/>
+    <string name="int_ior" value="bk7"/>
+    <string name="ext_ior" value="air"/>
+</bsdf>
+<bsdf type="diffuse" id="wall">
+	<rgb name="reflectance" value="0.2 0.2 0.2"/>
+</bsdf>
+	<bsdf type="mask" id="CurtainsBSDF">
+		<float name="opacity" value="0.531049" />
+		<bsdf type="twosided">
+			<bsdf type="diffuse">
+				<rgb name="reflectance" value="1, 1, 1" />
+			</bsdf>
+		</bsdf>
+	</bsdf>
+    <bsdf type="dielectric" id="glass">
+        <float name="int_ior" value="1.7"/>
+        <float name="ext_ior" value="1.0"/>
+    </bsdf>
+	<bsdf type="twosided" id="mat-Material.001">
+		<bsdf type="diffuse">
+			<rgb value="1.0 1.0 1.0" name="reflectance"/>
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="default-bsdf">
+		<bsdf type="diffuse"/>
+	</bsdf>
+
+    <bsdf type="roughplastic" id="floor_bsdf" >
+        <string name="distribution" value="ggx"/>
+        <float name="int_ior" value="1.5" />
+        <float name="ext_ior" value="1" />
+        <boolean name="nonlinear" value="true" />
+        <texture name="diffuse_reflectance" type="bitmap" >
+            <string name="filename" value="textures/wood.jpg" />
+        </texture>
+    </bsdf>
+	<bsdf type="twosided" id="frame_bsdf">
+		<bsdf type="principled" name="bsdf">
+			<texture type="bitmap" name="base_color">
+				<string name="filename" value="textures/basecolor_frame.jpg"/>
+			</texture>
+    		<float name="specular" value="0.6" />
+    		<float name="roughness" value="0.2" />
+    		<!-- <float name="spec_tint" value="0.4" /> -->
+    		<!-- <float name="anisotropic" value="0.5" /> -->
+			<texture type="bitmap" name="metallic">
+				<string name="filename" value="textures/Image_1.png"/>
+			</texture>
+
+		</bsdf>
+	</bsdf>
+	<bsdf type="twosided" id="frame_picture_bsdf">
+	 <bsdf type="diffuse" >
+        <texture name="reflectance" type="bitmap" >
+            <string name="filename" value="textures/basecolor.jpg" />
+             <string name="filter_type" value="nearest"/>
+             <boolean name="raw" value="false"/>
+        </texture>
+	</bsdf>
+	</bsdf>
+<!-- Emitters -->
+
+    <emitter type="envmap">
+        <string name="filename" value="textures/tiergarten_8k.hdr"/>
+        <float name="scale" value="20"/>
+    </emitter>
+	<!-- <shape type="ply">
+		<string name="filename" value="meshes/lights.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="default-bsdf" name="bsdf"/>
+		<emitter type="area">
+			<rgb value="200.000000 200.000000 200.000000" name="radiance"/>
+		</emitter>
+	</shape> -->
+
+<!-- Shapes -->
+
+	<shape type="ply" id="curtain_frame">
+		<string name="filename" value="meshes/curtain_frame.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="floor_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="win_frame_main">
+		<string name="filename" value="meshes/win_frame_1.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="floor_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="win_frame">
+		<string name="filename" value="meshes/win_frame.ply"/>
+		<ref id="floor_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="floor_frame">
+		<string name="filename" value="meshes/floor_frame.ply"/>
+		<ref id="floor_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/wall.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="wall" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/celing.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="wall" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="floor">
+		<string name="filename" value="meshes/floor.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="floor_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="curtain">
+		<string name="filename" value="meshes/curtain.ply"/>
+		<ref id="CurtainsBSDF" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/stick.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="gold" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/chain.ply"/>
+		<ref id="copper" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/chain_1.ply"/>
+		<ref id="copper" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/chain_2.ply"/>
+		<ref id="copper" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/cups_1.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="cups" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/cups.ply"/>
+		<ref id="cups" name="bsdf"/>
+	</shape>
+
+
+	<shape type="ply" id="frame-front">
+		<string name="filename" value="meshes/frame_front.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="frame_picture_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="mesh-frame_1">
+		<string name="filename" value="meshes/frame_1.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="frame_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="mesh-frame_2">
+		<string name="filename" value="meshes/frame_2.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="frame_bsdf" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/light_stick_1.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="gold" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/light_stick_2.ply"/>
+		<ref id="gold" name="bsdf"/>
+	</shape>
+	<shape type="ply">
+		<string name="filename" value="meshes/light_stick_3.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="gold" name="bsdf"/>
+	</shape>
+
+</scene>

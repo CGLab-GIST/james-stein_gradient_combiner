@@ -1,0 +1,106 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="4096"/>
+	<default name="resx" value="1024"/>
+	<default name="resy" value="1024"/>
+	<default name="integrator" value="path"/>
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="$integrator">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+	<sensor type="perspective">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="17"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="100.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="-136.55929154800157"/>
+			<rotate y="1" angle="3.6369346609283377e-06"/>
+			<rotate z="1" angle="-179.999991348578"/>
+			<translate value="0.058892 11.698307 12.305794"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor>
+
+<!-- Materials -->
+	<bsdf type="twosided" id="default-bsdf" name="default-bsdf">
+		<bsdf type="diffuse" name="bsdf"/>
+	</bsdf>
+
+<!-- Emitters -->
+    <emitter type="envmap">
+        <string name="filename" value="textures/warm_bar_2k.exr"/>
+        <float name="scale" value="1"/>
+
+    </emitter>
+	<!-- <emitter type="spot" id="emit-Spot" name="emit-Spot">
+		<rgb value="10.795775 10.795775 10.795775" name="intensity"/>
+		<float name="cutoff_angle" value="22.500001"/>
+		<float name="beam_width" value="20.723722"/>
+		<transform name="to_world">
+			<matrix value="1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -1.000000 5.457636 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000"/>
+		</transform>
+	</emitter> -->
+
+<!-- Shapes -->
+<bsdf type="normalmap" id="bsdf_tray">
+    <texture name="normalmap" type="bitmap">
+        <boolean name="raw" value="true"/>
+        <string name="filename" value="textures/01_default_Normal.png"/>
+		    <string name="filter_type" value="nearest"/>
+    </texture>
+    <bsdf type="principled">
+        <texture name="base_color" type="bitmap" >
+            <string name="filename" value="textures/01_default_BaseColor.png" />
+		    <string name="filter_type" value="nearest"/>
+            <boolean name="raw" value="false"/>	
+        </texture>
+        <texture name="metallic" type="bitmap" >
+            <string name="filename" value="textures/01_default_Metallic.png" />
+			<!-- <string name="filename" value="textures/metallic.png" /> -->
+            <string name="filter_type" value="nearest"/>
+            <boolean name="raw" value="false"/>
+        </texture>
+   		 <!-- <float name="specular" value="0.6" /> -->
+        <texture name="roughness" type="bitmap" >
+            <string name="filename" value="textures/roughness.png" />
+		    <string name="filter_type" value="nearest"/>
+            <boolean name="raw" value="false"/>	
+        </texture>
+    <!-- <float name="spec_tint" value="0.4" /> -->
+    <!-- <float name="anisotropic" value="0.5" /> -->
+    <!-- <float name="sheen" value="0.3" /> -->
+    <!-- <float name="sheen_tint" value="0.2" /> -->
+    <!-- <float name="clearcoat" value="0.6" /> -->
+    <!-- <float name="clearcoat_gloss" value="0.3" /> -->
+    <!-- <float name="spec_trans" value="0.4" /> -->
+</bsdf>
+</bsdf>
+
+
+
+	<shape type="ply" id="tray">
+		<string name="filename" value="meshes/Disc.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="bsdf_tray" name="bsdf"/>
+	</shape>
+	<shape type="ply" id="mesh-Plane" name="mesh-Plane">
+		<string name="filename" value="meshes/Plane.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="default-bsdf" name="bsdf"/>
+	</shape>
+
+<!-- Volumes -->
+
+</scene>
